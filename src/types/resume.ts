@@ -1,4 +1,3 @@
---- START OF FILE src/types/resume.ts ---
 export interface ContactInfo {
   email: string;
   phone: string;
