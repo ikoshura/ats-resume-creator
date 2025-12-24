@@ -1,77 +1,74 @@
-import { useRef, useState } from "react";
-import { Download, Printer, LayoutTemplate } from "lucide-react";
+import { useState } from "react";
+import { Download, LayoutTemplate } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CVDocument from "@/components/CVDocument";
-import CVDocumentTwoColumn from "@/components/CVDocumentTwoColumn";
+import Resume from "@/components/Resume";
+import { resumeData } from "@/data/resumeData";
 
-type DesignType = "classic" | "two-column";
+type DesignType = "classic" | "professional";
 
 const Index = () => {
-  const cvRef = useRef<HTMLDivElement>(null);
-  const [design, setDesign] = useState<DesignType>("classic");
+  const [design, setDesign] = useState<DesignType>("professional");
 
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const handleDownloadPDF = () => {
+  const handleDownload = () => {
     window.print();
   };
 
   const toggleDesign = () => {
-    setDesign(prev => prev === "classic" ? "two-column" : "classic");
+    setDesign(prev => prev === "classic" ? "professional" : "classic");
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Action Bar */}
-      <div className="no-print sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
-        <div className="max-w-[850px] mx-auto px-4 py-4 flex items-center justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="text-lg font-heading font-bold text-foreground truncate">CV Preview</h1>
-            <p className="text-sm text-muted-foreground">ATS-Friendly Format</p>
-          </div>
-          <div className="flex gap-2 flex-shrink-0">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={toggleDesign}
-              className="gap-2"
-            >
-              <LayoutTemplate className="w-4 h-4" />
-              <span className="hidden sm:inline">{design === "classic" ? "Two-Column" : "Classic"}</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handlePrint}
-              className="gap-2"
-            >
-              <Printer className="w-4 h-4" />
-              <span className="hidden sm:inline">Print</span>
-            </Button>
-            <Button 
-              size="sm" 
-              onClick={handleDownloadPDF}
-              className="gap-2"
-            >
-              <Download className="w-4 h-4" />
-              <span className="hidden sm:inline">Download PDF</span>
-            </Button>
-          </div>
+    <div className="min-h-screen bg-muted py-8 px-4 sm:px-6 lg:px-8 print:p-0 print:bg-white print:min-h-0">
+      {/* Navigation / Actions - Hidden when printing */}
+      <nav className="max-w-[210mm] mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 no-print">
+        <div>
+          <h1 className="text-xl font-bold text-foreground">Resume Preview</h1>
+          <p className="text-muted-foreground text-sm">Review content before downloading.</p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            onClick={toggleDesign}
+            variant="outline"
+            className="gap-2"
+          >
+            <LayoutTemplate className="w-4 h-4" />
+            <span className="hidden sm:inline">{design === "classic" ? "Professional" : "Classic"}</span>
+          </Button>
+          <Button
+            onClick={handleDownload}
+            className="gap-2"
+          >
+            <Download className="w-5 h-5" />
+            Download PDF (ATS Friendly)
+          </Button>
+        </div>
+      </nav>
+
+      {/* 
+        A4 Container 
+        On Screen: Simulates A4 paper with explicit dimensions and shadow.
+        On Print: Removes restrictions to allow browser pagination to handle overflow naturally.
+      */}
+      <div className="max-w-[210mm] mx-auto print:max-w-none print:w-full">
+        <div 
+          id="resume-content" 
+          className="bg-card shadow-2xl print:shadow-none p-[15mm] sm:p-[20mm] print:p-0 min-h-[297mm] print:min-h-0 print:h-auto overflow-hidden print:overflow-visible rounded-lg print:rounded-none"
+        >
+          {design === "professional" ? (
+            <Resume data={resumeData} />
+          ) : (
+            <CVDocument />
+          )}
         </div>
       </div>
 
-      {/* CV Content */}
-      <main className="py-8 px-4">
-        <div ref={cvRef}>
-          {design === "classic" ? <CVDocument /> : <CVDocumentTwoColumn />}
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="no-print py-6 text-center text-sm text-muted-foreground border-t border-border">
-        <p>Click "Download PDF" and select "Save as PDF" in the print dialog for the best ATS-compatible format.</p>
+      {/* Footer - Hidden when printing */}
+      <footer className="max-w-[210mm] mx-auto mt-12 text-center text-muted-foreground text-sm no-print pb-8">
+        <p>
+          <strong>Tip:</strong> In the print dialog, ensure <strong>"Save as PDF"</strong> is selected.<br />
+          In "More settings", uncheck "Headers and footers" for a clean look.
+        </p>
       </footer>
     </div>
   );
