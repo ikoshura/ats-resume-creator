@@ -1,43 +1,46 @@
-import { useRef } from "react";
-import { Download, Printer } from "lucide-react";
+import { useRef, useState } from "react";
+import { Download, Printer, LayoutTemplate } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CVDocument from "@/components/CVDocument";
-import { useToast } from "@/hooks/use-toast";
+import CVDocumentTwoColumn from "@/components/CVDocumentTwoColumn";
+
+type DesignType = "classic" | "two-column";
 
 const Index = () => {
   const cvRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
+  const [design, setDesign] = useState<DesignType>("classic");
 
   const handlePrint = () => {
     window.print();
-    toast({
-      title: "Print Dialog Opened",
-      description: "Select 'Save as PDF' in the print dialog to download your ATS-friendly CV.",
-    });
   };
 
-  const handleDownloadPDF = async () => {
-    toast({
-      title: "Generating PDF...",
-      description: "Opening print dialog. Select 'Save as PDF' to download.",
-    });
-    
-    // Use browser print with PDF option
-    setTimeout(() => {
-      window.print();
-    }, 100);
+  const handleDownloadPDF = () => {
+    window.print();
+  };
+
+  const toggleDesign = () => {
+    setDesign(prev => prev === "classic" ? "two-column" : "classic");
   };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Action Bar */}
       <div className="no-print sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
-        <div className="max-w-[850px] mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-heading font-bold text-foreground">CV Preview</h1>
+        <div className="max-w-[850px] mx-auto px-4 py-4 flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-lg font-heading font-bold text-foreground truncate">CV Preview</h1>
             <p className="text-sm text-muted-foreground">ATS-Friendly Format</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-shrink-0">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={toggleDesign}
+              className="gap-2"
+            >
+              <LayoutTemplate className="w-4 h-4" />
+              <span className="hidden sm:inline">{design === "classic" ? "Two-Column" : "Classic"}</span>
+            </Button>
             <Button 
               variant="outline" 
               size="sm" 
@@ -62,7 +65,7 @@ const Index = () => {
       {/* CV Content */}
       <main className="py-8 px-4">
         <div ref={cvRef}>
-          <CVDocument />
+          {design === "classic" ? <CVDocument /> : <CVDocumentTwoColumn />}
         </div>
       </main>
 
