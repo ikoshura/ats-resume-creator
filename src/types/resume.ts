@@ -1,3 +1,4 @@
+--- START OF FILE src/types/resume.ts ---
 export interface ContactInfo {
   email: string;
   phone: string;
@@ -53,4 +54,16 @@ export interface ResumeData {
   projects: Experience[];
   certificates: Certificate[];
   languages: Language[];
+}
+
+export interface UILabels {
+  profile: string;
+  contact: string;
+  skills: string;
+  education: string;
+  experience: string;
+  languages: string;
+  certificates: string;
+  download: string;
+  preview: string;
 }
