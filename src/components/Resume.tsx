@@ -1,13 +1,15 @@
-import { Mail, Phone, MapPin, Linkedin, Github, ExternalLink } from "lucide-react";
-import { ResumeData } from "@/types/resume";
+import { Mail, Phone, MapPin, Linkedin, Github, ExternalLink, Link as LinkIcon } from "lucide-react";
+import { ResumeData, UILabels } from "@/types/resume";
 
 interface ResumeProps {
   data: ResumeData;
+  labels: UILabels;
+  showLinks?: boolean;
 }
 
-export const Resume = ({ data }: ResumeProps) => {
+export const Resume = ({ data, labels, showLinks = false }: ResumeProps) => {
   return (
-    <div className="bg-card text-card-foreground print:bg-white print:text-gray-800">
+    <div className="bg-card text-card-foreground print:bg-white print:text-gray-800 text-left">
       {/* Header / Contact */}
       <header className="border-b-2 border-foreground pb-6 mb-6 break-inside-avoid print:border-gray-800">
         <h1 className="text-3xl md:text-4xl font-bold uppercase tracking-wider text-foreground mb-2 print:text-gray-900">
@@ -70,7 +72,7 @@ export const Resume = ({ data }: ResumeProps) => {
           {/* Summary */}
           <section className="break-inside-avoid">
             <h3 className="text-sm font-bold uppercase tracking-widest border-b border-border pb-1 mb-3 text-foreground print:border-gray-300 print:text-gray-900">
-              Profile
+              {labels.profile}
             </h3>
             <p className="text-sm leading-relaxed text-muted-foreground text-justify print:text-gray-700">
               {data.summary}
@@ -80,30 +82,43 @@ export const Resume = ({ data }: ResumeProps) => {
           {/* Experience / Projects */}
           <section>
             <h3 className="text-sm font-bold uppercase tracking-widest border-b border-border pb-1 mb-4 text-foreground break-inside-avoid print:border-gray-300 print:text-gray-900">
-              Selected Projects
+              {labels.experience}
             </h3>
             <div className="space-y-5">
               {data.projects.map((project, index) => (
                 <div key={index} className="break-inside-avoid">
                   <div className="flex flex-wrap justify-between items-baseline gap-2 mb-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-bold text-foreground print:text-gray-800">{project.project}</h4>
-                      {project.link && (
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-bold text-foreground print:text-gray-800">{project.project}</h4>
+                        {project.link && !showLinks && (
+                          <a 
+                            href={`https://${project.link}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-muted-foreground hover:text-primary print:hidden"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+                      {project.link && showLinks && (
                         <a 
                           href={`https://${project.link}`} 
                           target="_blank" 
                           rel="noopener noreferrer" 
-                          className="text-muted-foreground hover:text-primary print:hidden"
+                          className="flex items-center gap-1 text-xs text-primary hover:underline mt-0.5 print:text-blue-700"
                         >
-                          <ExternalLink className="w-3 h-3" />
+                          <LinkIcon className="w-3 h-3" />
+                          {project.link}
                         </a>
                       )}
                     </div>
-                    <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded print:bg-transparent print:p-0">
+                    <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded print:bg-transparent print:p-0 whitespace-nowrap">
                       {project.period}
                     </span>
                   </div>
-                  <div className="text-sm font-medium text-primary mb-1 print:text-blue-700">{project.role}</div>
+                  <div className="text-sm font-medium text-primary mb-1 print:text-blue-700">{project.role} {project.company ? `| ${project.company}` : ''}</div>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-2 print:text-gray-700">
                     {project.description}
                   </p>
@@ -132,7 +147,7 @@ export const Resume = ({ data }: ResumeProps) => {
           {/* Skills */}
           <section className="break-inside-avoid">
             <h3 className="text-sm font-bold uppercase tracking-widest border-b border-border pb-1 mb-3 text-foreground print:border-gray-300 print:text-gray-900">
-              Skills
+              {labels.skills}
             </h3>
             <div className="space-y-4">
               {data.skills.map((skillGroup, index) => (
@@ -158,7 +173,7 @@ export const Resume = ({ data }: ResumeProps) => {
           {/* Education */}
           <section className="break-inside-avoid">
             <h3 className="text-sm font-bold uppercase tracking-widest border-b border-border pb-1 mb-3 text-foreground print:border-gray-300 print:text-gray-900">
-              Education
+              {labels.education}
             </h3>
             <div className="space-y-4">
               {data.education.map((edu, index) => (
@@ -175,7 +190,7 @@ export const Resume = ({ data }: ResumeProps) => {
           {/* Languages */}
           <section className="break-inside-avoid">
             <h3 className="text-sm font-bold uppercase tracking-widest border-b border-border pb-1 mb-3 text-foreground print:border-gray-300 print:text-gray-900">
-              Languages
+              {labels.languages}
             </h3>
             <div className="space-y-2">
               {data.languages.map((lang, index) => (
@@ -192,13 +207,13 @@ export const Resume = ({ data }: ResumeProps) => {
           {/* Certificates */}
           <section className="break-inside-avoid">
             <h3 className="text-sm font-bold uppercase tracking-widest border-b border-border pb-1 mb-3 text-foreground print:border-gray-300 print:text-gray-900">
-              Certificates
+              {labels.certificates}
             </h3>
             <ul className="space-y-3">
               {data.certificates.map((cert, index) => (
                 <li key={index} className="text-sm break-inside-avoid">
                   <div className="font-medium text-foreground leading-tight print:text-gray-800">{cert.name}</div>
-                  <div className="text-muted-foreground text-xs mt-0.5 print:text-gray-600">{cert.issuer}</div>
+                  <div className="text-muted-foreground text-xs mt-0.5 print:text-gray-600">{cert.issuer} {cert.date ? `• ${cert.date}` : ''}</div>
                 </li>
               ))}
             </ul>
